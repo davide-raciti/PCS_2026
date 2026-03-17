@@ -1,12 +1,19 @@
 # include <iostream>
 # include <fstream>
+# include <string>
 using namespace std;
 
 int main(int argc, const char *argv[]) { // argc numero input, argv vettore input
 
-    string filename = argv[1];
+    if (argc < 2)
+    {
+        cerr << "Non hai inserito il nome del file da leggere\n"; 
+        return 1;
+    }
 
+    string filename = argv[1];
     ifstream ifs(filename); // legge il testo che gli stai passando
+
     if ( ifs.is_open() ) {
         string location;
         double temp1, temp2, temp3, temp4;
