@@ -1,0 +1,13 @@
+In generale, i risultati mostrano che gli algoritmi quadratici performano meglio su vettori di piccole dimensioni mentre gli algoritmi logaritmici dominano al crescere della dimensione del vettore da ordinare.
+In particolare, tra gli algoritmi quadratici il più veloce il più delle volte è insertion-sort.
+Per quanto riguarda il confronto tra algoritmi quadratici e logaritmici su vettori di dimensione inferiore a 100, dipende molto dalla scelta della modalità di compilazione.
+
+Concentrando il confronto su insertion-sort e quick-sort faccio le seguenti osservazioni:
+- modalità Debug: insertion-sort è risultato più veloce fino a una dimensione di circa 33-35, dopodichè quick-sort si è dimostrato più veloce.
+- modalità Release: insertion-sort è risultato più veloce di quick-sort per quasi tutte le dimensioni da 2 a 100.
+
+Pertanto, ho implementato un algoritmo 'quicksort_ottimizzato' che applica insertion-sort sul vettore di partenza se esso ha dimensione inferiore a 35 e negli altri casi applica quick-sort.
+    in aggiunta quicksort_ottimizzato applica insertion-sort sui sottovettori delle ultime iterazioni quando essi hanno dimensione inferiore a 35.
+    tale algoritmo si è dimostrato il più veloce tra quelli implementati manualmente.
+
+Per quanto riguarda la funzione della libreria standard std::sort(), essa è la più veloce in modalità Release, mentre in modalità Debug viene superata da quicksort_ottimizzato.
