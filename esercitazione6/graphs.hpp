@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <iostream>
 #include <vector>
+#include <iterator>
+#include <algorithm>
 
 // classe undirected_edge
 template<typename N>
@@ -62,8 +64,6 @@ class undirected_graph {
 private:
     set<N> nodes;
     set<undirected_edge<N>> edges;
-    map<undirected_edge<N>, int> edges_map;
-    vector<undirected_edge<N>> edges_vector;
 public:
     // costruttore di default
     undirected_graph() = default;
@@ -72,8 +72,6 @@ public:
     undirected_graph(const undirected_graph& other) {
         nodes = other.nodes;
         edges = other.edges;
-        edges_map = other.edges_map;
-        edges_vector = other.edges_vector;
     }
 
     // metodo neighbours
@@ -98,11 +96,6 @@ public:
         nodes.insert(edge.from());
         nodes.insert(edge.to());
 
-        // aggiorno i contenitori map e vector
-        int numero = edges_vector.size();
-        edges_vector.push_back(edge);
-        edges_map[edge] = numero;
-
     }
 
     // metodo all_edges
@@ -118,25 +111,54 @@ public:
     }
 
     // metodo edge_number
-    // input: edge, output: numero di inserimento associato all'edge
+    // conta manualmente i passi fino all'arco cercato
+        // !!! sfruttiamo che graph è un set di edges e quindi
+        // gli archi al suo interno sono già ordinati dal più piccolo
+        // al più grande secondo operator<
     int edge_number(const undirected_edge<N>& edge) const {
-        return edges_map.at(edge);
+        int count = 0;
+        for (auto it = edges.begin(); it != edges.end(); ++it) {
+            if (*it == edge) {
+                return count;
+            }
+            count++;
+        }
+        return -1; // se l'arco non esiste, impongo -1
     }
 
     // metodo edge_at
-    // input: numero di inserimento, output: edge associato al numero
+    // fa avanzare l'iteratore manualmente per 'num' volte
+        // !!! sfruttiamo che graph è un set di edges e quindi
+        // gli archi al suo interno sono già ordinati dal più piccolo
+        // al più grande secondo operator<
     undirected_edge<N> edge_at(int num) const {
-        return edges_vector[num];
+        auto it = edges.begin();
+        for (int i = 0; i < num; ++i) {
+            ++it; 
+        }
+        return *it; // dereferenzio l'iteratore per ottenere l'arco
     }
 
     // operatore di differenza tra grafi
+        // !!! sfruttiamo che graph è un set di edges e quindi
+        // gli archi al suo interno sono già ordinati dal più piccolo
+        // al più grande secondo operator<
     undirected_graph<N> operator-(const undirected_graph<N>& other) const {
         undirected_graph<N> result;
-        for (const undirected_edge<N>& edge : edges) {
-            if (!other.edges.contains(edge)) {
-                result.add_edge(edge);
-            }
+        set<undirected_edge<N>> diff_edges;
+
+        // funzione della libreria standard, lavora con gli iteratori
+        set_difference(
+            edges.begin(), edges.end(),
+            other.edges.begin(), other.edges.end(),
+            inserter(diff_edges, diff_edges.begin())
+        );
+
+        // inseriamo gli archi nel nuovo grafo
+        for (const auto& edge : diff_edges) {
+            result.add_edge(edge);
         }
-    return result;
+
+        return result;
     }
 };
