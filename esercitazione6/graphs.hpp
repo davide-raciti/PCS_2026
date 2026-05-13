@@ -144,21 +144,16 @@ public:
         // gli archi al suo interno sono già ordinati dal più piccolo
         // al più grande secondo operator<
     undirected_graph<N> operator-(const undirected_graph<N>& other) const {
-        undirected_graph<N> result;
-        set<undirected_edge<N>> diff_edges;
-
-        // funzione della libreria standard, lavora con gli iteratori
-        set_difference(
-            edges.begin(), edges.end(),
-            other.edges.begin(), other.edges.end(),
-            inserter(diff_edges, diff_edges.begin())
-        );
-
-        // inseriamo gli archi nel nuovo grafo
-        for (const auto& edge : diff_edges) {
-            result.add_edge(edge);
+        undirected_graph<N> diff;
+        // data un'operazione G1 - G2 = diff
+        // itero tutti gli archi del grafo G1
+        for(const auto& edge : edges) {
+            // se l'arco non è presente in G2, lo aggiungo a diff
+            if(other.edges.find(edge) == other.edges.end()) {
+                diff.add_edge(edge);
+            }
         }
 
-        return result;
+        return diff;
     }
 };
